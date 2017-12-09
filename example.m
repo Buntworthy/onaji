@@ -3,6 +3,10 @@ root = 'C:\Data\family_photos';
 filename = 'IMG_20170409_161028.jpg';
 layer = 'fc7';
 
-imageData = ImageData(root, filename);
-imageData.calculateRegions(@getRegions);
-imageData.calculateFeatures(net, layer);
+proposer = EdgeBoxRegionProposer(10);
+extractor = DummyFeatureExtractor();
+imageDb = ImageDatabase(root, proposer, extractor);
+
+% make a query
+query = Query.fromImageRegion(imageDb.Images(1), 1);
+imageDb.query(query)

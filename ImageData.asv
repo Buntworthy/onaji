@@ -2,7 +2,8 @@ classdef ImageData < handle
 	
 	properties
 		Root
-        Metadata
+		Network
+		Layer
 		Path
 		Features
 		Regions
@@ -25,29 +26,21 @@ classdef ImageData < handle
         end
         
         function calculateRegions(this, regionProposer)
-            this.Regions = regionProposer.calculate(this.Image);
+            this.Regions = regionProposer(this.Image);
         end
         
-        function calculateFeatures(this, featureExtractor)
-            this.Features = featureExtractor.calculate(this.Image, this.Regions);
-            this.Metadata = featureExtractor.Metadata;
+        function calculateFeatures(this, network, layer)
+            this.Features = extractFeatures(this.Image, this.Regions, network, layer);
+            this.Network = vertcat({network.Layers.Name}');
+            this.Layer = layer;
         end
 
-        function tf = eq(this, other)
-            if ischar(other)
-                tf = strcmpi(other, this.Path);
-            else
-                tf = eq@handle(this, other);
-            end
-        end
-
-        %% Plotting methods
 		function show(this)
 			f = figure();
 			imshow(this.Image);
-        end
-        
-        function showRegions(this, regionIndexes)
+		end
+
+		function showRegions(this, regionIndexes)
 
 			if isempty(regionIndexes)
 				regionIndexes = 1:size(this.Regions, 1);
@@ -75,13 +68,9 @@ classdef ImageData < handle
 			for iRegion = 1:numel(regionIndexes)
 				region = this.Regions(regionIndexes(iRegion), :);
 				imHeatmap(region(2):region(2) + region(4), ...
-                          region(1):region(1) + region(3)) = ...
-                             imHeatmap(region(2):region(2) + region(4), ...
-                                        region(1):region(1) + region(3)) + 1;
-            end
-            imshowpair(im, imHeatmap, 'montage')
-%             imFused = imfuse(im, imHeatmap);
-% 			imshow(imFused)
+                             region(1), 
+			end
+			imshow(im)
         end
 
 		function im = get.Image(this)

@@ -29,29 +29,17 @@ classdef ImageDatabase < handle
                 this.Images(end + 1) = ImageData(this.Root, path);
             end
             
-            fprintf('Updating DB')
             for iImage = 1:numel(this.Images)
-                fprintf('.');
                 thisImage = this.Images(iImage);
                 if isempty(thisImage.Features)
                     thisImage.calculateRegions(this.RegionProposer);
                     thisImage.calculateFeatures(this.FeatureExtractor);
                 end
             end
-            fprintf('done\n');
         end
         
-        function result = query(this, query)
-            imagesToQuery = this.Images(this.Images ~= query.Image);
-             
-            distances = zeros(numel(imagesToQuery), 1);
-            minRegion = zeros(numel(imagesToQuery), 1);
-            for iIm = 1:numel(imagesToQuery)
-                iDistances = pdist2(query.Features, imagesToQuery(iIm).Features, 'cosine');
-                [distances(iIm), minRegion(iIm)] = min(iDistances);
-            end
-            
-            result = table({imagesToQuery.Path}', distances, minRegion);
+        function query(this, query)
+             imagesToQuery = this.Images;
         end
         
         function close(this)
