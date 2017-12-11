@@ -50,8 +50,10 @@ classdef ImageDatabase < handle
                 iDistances = pdist2(query.Features, imagesToQuery(iIm).Features, 'cosine');
                 [distances(iIm), minRegion(iIm)] = min(iDistances);
             end
-            
-            result = table({imagesToQuery.Path}', distances, minRegion);
+            imageFilename = {imagesToQuery.Path}';
+            indexes = (1:numel(this.Images))';
+            indexes = indexes(this.Images ~= query.Image);
+            result = table(indexes, imageFilename, distances, minRegion);
         end
         
         function close(this)

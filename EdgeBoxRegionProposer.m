@@ -25,12 +25,13 @@ classdef EdgeBoxRegionProposer < RegionProposer
             this.Opts.beta = 0.75;     % nms threshold for object proposals
             this.Opts.minScore = 0.02;  % min score of boxes to detect
             this.Opts.maxBoxes = this.NRegions;  % max number of boxes to detect
+            this.Opts.minBoxArea = 10000;
         end
         
         function regions = calculate(this, im)
-            im = imresize(im, 0.1);
+            im = imresize(im, 1);
             edgeBoxOutput = edgeBoxes(im, this.Model, this.Opts);
-            regions = 10*edgeBoxOutput(:, 1:4);
+            regions = 1*edgeBoxOutput(:, 1:4);
         end
         
     end
