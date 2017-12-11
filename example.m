@@ -3,7 +3,7 @@ net = alexnet;
 layer = 'fc7';
 
 proposer = EdgeBoxRegionProposer(10);
-extractor = DummyFeatureExtractor();
+extractor = CNNFeatureExtractor(net, layer);
 imageDb = ImageDatabase(root, proposer, extractor);
 
 % make a query
