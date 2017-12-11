@@ -4,7 +4,7 @@ filename = 'IMG_20170409_161028.jpg';
 layer = 'fc7';
 
 proposer = EdgeBoxRegionProposer(10);
-extractor = DummyFeatureExtractor();
+extractor = CNNFeatureExtractor(net, layer);
 imageDb = ImageDatabase(root, proposer, extractor);
 
 % make a query
