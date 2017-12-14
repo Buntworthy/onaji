@@ -8,6 +8,7 @@ classdef ImageData < handle
 		Regions
         RegionProposer
         FeatureExtractor
+        Resize = 0.25
 	end
 
 	properties (Dependent)
@@ -100,12 +101,18 @@ classdef ImageData < handle
 
 		function im = get.Image(this)
             if isempty(this.Image_)
-                this.Image_ = imread(fullfile(this.Root, this.Path));
+                this.Image_ = this.loadImage();
             end
             
             im = this.Image_;
-		end
+        end
+        
+        function im = loadImage(this)
+            im = imread(fullfile(this.Root, this.Path));
+            im = imresize(im, this.Resize);
+        end
 
-	end
+    end
+   
 
 end
