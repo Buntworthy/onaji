@@ -14,21 +14,15 @@ classdef CNNFeatureExtractor < FeatureExtractor
         end
         
         function features = calculate(this, im, regions)
-            layerIdx = strcmp({this.Network.Layers.Name}, this.Layer);
             inSize = this.Network.Layers(1).InputSize;
-            nFeatures = this.Network.Layers(layerIdx).OutputSize;
             nRegions = size(regions, 1);
-            features = zeros(nRegions, nFeatures, 'single');
-    
+            
+            imCrops = zeros(inSize(1), inSize(2), 3, nRegions, 'uint8');
             for iRegion = 1:nRegions
                 imCrop = imcrop(im, regions(iRegion, :));
-                imInput = imresize(imCrop, inSize(1:2));
-                featureVector = this.Network.activations(imInput, ...
-                                                        this.Layer, ...
-                                                        'OutputAs', 'channels');
-                % TODO reshaping if required
-                features(iRegion, :) = featureVector;
+                imCrops(:, :, :, iRegion) = imresize(imCrop, inSize(1:2));
             end
+            features = this.Network.activations(imCrops, this.Layer);
         end
     end
 end
