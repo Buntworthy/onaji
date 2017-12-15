@@ -42,9 +42,14 @@ classdef ImageData < handle
         end
 
         %% Plotting methods
-		function show(this)
-			f = figure();
-			imshow(this.Image);
+		function show(this, varargin)
+            if isempty(varargin)
+                parent = gca;
+            else
+                parent = varargin{1};
+            end
+            imshow(this.Image, ...
+                    'Parent', parent);
         end
         
         function showRegions(this, regionIndexes)
