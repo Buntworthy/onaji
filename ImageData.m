@@ -6,6 +6,9 @@ classdef ImageData < handle
 		Path
 		Features
 		Regions
+        RegionProposer
+        FeatureExtractor
+        Resize = 0.25
 	end
 
 	properties (Dependent)
@@ -25,12 +28,24 @@ classdef ImageData < handle
         end
         
         function calculateRegions(this, regionProposer)
+            this.RegionProposer = regionProposer;
             this.Regions = regionProposer.calculate(this.Image);
         end
         
         function calculateFeatures(this, featureExtractor)
+            this.FeatureExtractor = featureExtractor;
             this.Features = featureExtractor.calculate(this.Image, this.Regions);
             this.Metadata = featureExtractor.Metadata;
+        end
+        
+        function idx = addRegion(this, region)
+            idx = size(this.Regions, 1) + 1;
+            this.Regions(idx, :) = region;
+            
+            if ~isempty(this.FeatureExtractor)
+                this.Features(idx, :) = ...
+                    this.FeatureExtractor.calculate(this.Image, region);
+            end
         end
 
         function tf = eq(this, other)
@@ -95,8 +110,14 @@ classdef ImageData < handle
             end
             
             im = this.Image_;
-		end
+        end
+        
+        function im = loadImage(this)
+            im = imread(fullfile(this.Root, this.Path));
+            im = imresize(im, this.Resize);
+        end
 
-	end
+    end
+   
 
 end
