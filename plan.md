@@ -55,3 +55,7 @@ Methods:
 
 - show
 - showRegions(idx)
+
+### Query
+
+Data required for a query is only a set of features (and possibly some region)
