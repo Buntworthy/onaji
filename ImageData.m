@@ -67,8 +67,12 @@ classdef ImageData < handle
                     'Parent', parent);
         end
         
-        function showRegions(this, regionIndexes)
-
+        function showRegions(this, regionIndexes, varargin)
+            if isempty(varargin)
+                parent = gca;
+            else
+                parent = varargin{1};
+            end
 			if isempty(regionIndexes)
 				regionIndexes = 1:size(this.Regions, 1);
 			end
@@ -81,7 +85,7 @@ classdef ImageData < handle
 											'LineWidth', 5, ...
                                             'Color', 255*rand(1, 3));
 			end
-			imshow(im)
+			imshow(im, 'Parent', parent)
         end
         
         function showRegionHeatmap(this, regionIndexes)
@@ -106,7 +110,7 @@ classdef ImageData < handle
 
 		function im = get.Image(this)
             if isempty(this.Image_)
-                this.Image_ = imread(fullfile(this.Root, this.Path));
+                this.Image_ = this.loadImage();
             end
             
             im = this.Image_;
