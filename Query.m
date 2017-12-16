@@ -20,7 +20,10 @@ classdef Query < handle
         function this = fromNewImageRegion(imageData)
             imageData.show();
             region = getrect();
-            regionIdxs = imageData.addRegion(region);
+            regionIdxs = imageData.matchRegion(region);
+            if isempty(regionIdxs)
+                regionIdxs = imageData.addRegion(region);
+            end
             this = Query(imageData, ...
                             regionIdxs, ...
                             imageData.Metadata);

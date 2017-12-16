@@ -38,6 +38,19 @@ classdef ImageData < handle
             this.Metadata = featureExtractor.Metadata;
         end
         
+        function idxs = matchRegion(this, region)
+            if isempty(this.Regions)
+                idxs = [];
+                return
+            end
+            
+            iou = bboxOverlapRatio(region, this.Regions);
+            [bestIou, idxs] = max(iou, [], 2);
+            if any(bestIou < 0.9)
+                idxs = [];
+            end
+        end
+        
         function idx = addRegion(this, region)
             idx = size(this.Regions, 1) + 1;
             this.Regions(idx, :) = region;

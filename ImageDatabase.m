@@ -54,6 +54,7 @@ classdef ImageDatabase < handle
             indexes = (1:numel(this.Images))';
             indexes = indexes(this.Images ~= query.Image);
             result = table(indexes, imageFilename, distances, minRegion);
+            result = sortrows(result, 3);
         end
         
         function close(this)
