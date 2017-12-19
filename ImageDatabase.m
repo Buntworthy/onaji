@@ -30,7 +30,9 @@ classdef ImageDatabase < handle
             end
             
             fprintf('Updating DB')
-            for iImage = 1:numel(this.Images)
+            nImages = numel(this.Images);
+            for iImage = 1:nImages
+                util.progress(iImage, nImages);
                 fprintf('.');
                 thisImage = this.Images(iImage);
                 if isempty(thisImage.Features)
@@ -42,18 +44,26 @@ classdef ImageDatabase < handle
         end
         
         function result = query(this, query)
-            imagesToQuery = this.Images(this.Images ~= query.Image);
+            imagesToQuery = this.Images;
+            queryImages = query.Image;
+            % TODO index no longer needed
+            indexes = (1:numel(this.Images))';
+            
+            for iQueryIm = numel(queryImages):-1:1
+                imagesToQuery(this.Images == queryImages(iQueryIm)) = [];
+                indexes(this.Images == queryImages(iQueryIm)) = [];
+            end
              
             distances = zeros(numel(imagesToQuery), 1);
             minRegion = zeros(numel(imagesToQuery), 1);
             for iIm = 1:numel(imagesToQuery)
                 iDistances = pdist2(query.Features, imagesToQuery(iIm).Features, 'cosine');
+                if size(iDistances, 1) > 1
+                    iDistances = min(iDistances);
+                end
                 [distances(iIm), minRegion(iIm)] = min(iDistances);
             end
-            imageFilename = {imagesToQuery.Path}';
-            indexes = (1:numel(this.Images))';
-            indexes = indexes(this.Images ~= query.Image);
-            result = table(indexes, imageFilename, distances, minRegion);
+            result = table(indexes, imagesToQuery', distances, minRegion);
             result = sortrows(result, 3);
         end
         

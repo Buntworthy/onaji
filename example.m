@@ -9,7 +9,7 @@ extractor = CNNFeatureExtractor(net, layer);
 imageDb = ImageDatabase(root, proposer, extractor);
 
 %% make a query
-x = 17;
+x = 187;
 y= 5;
 
 %query = Query.fromImageRegion(imageDb.Images(x), y);

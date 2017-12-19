@@ -1,5 +1,5 @@
-nImages = 10;
-nRegions = 100;
+nImages = 34;
+nRegions = 1;
 
 
 allFeatures = vertcat(imageDb.Images.Features);
@@ -9,7 +9,7 @@ scatter(Y(:,1), Y(:,2), 20, repelem((1:nImages)', nRegions), 'filled')
 
 Y = Y./range(Y);
 Y = Y - min(Y);
-outSize = 2000;
+outSize = 500;
 pad = 40;
 bigIm = zeros(outSize + 2*pad, outSize + 2*pad, 3, 'uint8');
 imSize = 40;
