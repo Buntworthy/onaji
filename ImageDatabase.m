@@ -29,18 +29,16 @@ classdef ImageDatabase < handle
                 this.Images(end + 1) = ImageData(this.Root, path);
             end
             
-            fprintf('Updating DB')
             nImages = numel(this.Images);
+            p = util.Progress('Updating DB', nImages);
             for iImage = 1:nImages
-                util.progress(iImage, nImages);
-                fprintf('.');
                 thisImage = this.Images(iImage);
                 if isempty(thisImage.Features)
                     thisImage.calculateRegions(this.RegionProposer);
                     thisImage.calculateFeatures(this.FeatureExtractor);
                 end
+                p.update(iImage);
             end
-            fprintf('done\n');
         end
         
         function result = query(this, query)
