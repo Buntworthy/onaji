@@ -9,6 +9,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import PIL
 
 import math
+from glob import glob
 
 def get_net():
     """Returns a feature extraction network."""
@@ -82,7 +83,7 @@ class Roi():
         return Roi(abs_x, abs_y, abs_width, abs_height, units='absolute')
 
     def __repr__(self):
-        return f"{self.x}, {self.y}, {self.width}, {self.height})"
+        return f"{self.x}, {self.y}, {self.width}, {self.height}"
 
 
 
@@ -162,6 +163,11 @@ class ImageCollection():
     def __init__(self):
         self.images = []
         self.net = get_net()
+
+    def add_directory(self, directory):
+        image_files = glob(directory + '/*.jpg')
+        for image_file in image_files:
+            self.add(image_file)
 
     def add(self, filename):
         """Add an image to the collection."""
