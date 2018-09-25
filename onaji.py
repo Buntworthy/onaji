@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from sklearn.metrics.pairwise import cosine_similarity
 import PIL
+from tqdm import tqdm
 
 import math
 from glob import glob
@@ -109,7 +110,6 @@ class Image():
     def compare(self, query):
         """Compare a query vector against the features."""
         flat_features, rois = expand_features(self.features)
-        print(flat_features.shape)
         distances = cosine_similarity(query.reshape(1, -1), flat_features.T)
         return distances, rois
 
@@ -141,8 +141,6 @@ def expand_features(features):
     height = pool_size/input_size[0]
     x = np.arange(0, input_size[1] - pool_size + 1, stride_size)/input_size[1]
     y = np.arange(0, input_size[0] - pool_size + 1, stride_size)/input_size[0]
-    print(x)
-    print(y)
     roi_list = []
     for y_pos in y:
         for x_pos in x:
@@ -152,8 +150,6 @@ def expand_features(features):
     pool_output = pool(torch.unsqueeze(torch.from_numpy(features), 0))
     pooled_features = pool_output.numpy()[0, :, :, :]
     pooled_features = np.reshape(pooled_features, (pooled_features.shape[0], -1))
-    print(len(roi_list))
-    print(pooled_features.shape)
     return (pooled_features, roi_list)
 
 
@@ -166,7 +162,7 @@ class ImageCollection():
 
     def add_directory(self, directory):
         image_files = glob(directory + '/*.jpg')
-        for image_file in image_files:
+        for image_file in tqdm(image_files):
             self.add(image_file)
 
     def add(self, filename):
@@ -182,5 +178,5 @@ class ImageCollection():
             result, rois = image.compare(query)
             best_index = np.argmax(result)
             best_score = np.amax(result)
-            results.append((best_index, best_score, rois))
+            results.append((best_score, image, rois[best_index]))
         return results
