@@ -109,7 +109,12 @@ class Image():
 
     def compare(self, query):
         """Compare a query vector against the features."""
-        flat_features, rois = expand_features(self.features)
+        all_features = []
+        all_rois = []
+        for pool in range(2, 5):
+            flat_features, rois = expand_features(self.features, pool)
+            all_features.extend(flat_features)
+            all_rois.extend(rois)
         distances = cosine_similarity(query.reshape(1, -1), flat_features.T)
         return distances, rois
 
@@ -130,11 +135,10 @@ class Image():
         plt.show()
 
 
-def expand_features(features):
+def expand_features(features, pool_size):
     """Make expanded set of features."""
     input_size = features.shape[1:3]
     num_features = features.shape[0]
-    pool_size = 3
     stride_size = math.floor(pool_size/2)
 
     width = pool_size/input_size[1]
